@@ -45,6 +45,12 @@ models_response_data = api.model("ModelsResponseData", {
     "models": fields.List(fields.Nested(model_info)),
 })
 
+# Text to Video models
+video_generate_request = api.model("VideoGenerateRequest", {
+    "prompt": fields.String(required=True, description="Text description of the video", example="A cat walking on the beach"),
+    "provider": fields.String(description="AI provider", enum=["openai"], example="openai"),
+})
+
 # Health check models
 service_status = api.model("ServiceStatus", {
     "api": fields.String(description="API server status"),
