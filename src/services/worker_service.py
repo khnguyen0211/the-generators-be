@@ -5,14 +5,14 @@ import time
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from services.queue_service import QueueService
+    from services.base_queue_service import BaseQueueService
     from services.logger_service import LoggerService
 
 
 class WorkerService:
     """Background worker that processes jobs from queue."""
 
-    def __init__(self, queue_service: "QueueService", logger: "LoggerService"):
+    def __init__(self, queue_service: "BaseQueueService", logger: "LoggerService"):
         self._queue = queue_service
         self._logger = logger
         self._running = False
@@ -37,31 +37,34 @@ class WorkerService:
 
     def _worker_loop(self) -> None:
         """Main worker loop."""
-        from services.queue_service import JobStatus
+        from services.base_queue_service import JobStatus
 
         while self._running:
             try:
                 job = self._queue.get_next_pending()
                 if job is None:
-                    time.sleep(0.5)
                     continue
 
-                self._logger.info(f"Processing job {job.id} ({job.job_type})")
+                self._logger.info(f"[WORKER] Picked up job: {job.id} | type={job.job_type}")
                 self._queue.update_status(job.id, JobStatus.PROCESSING)
 
                 handler = self._queue.get_handler(job.job_type)
                 if handler is None:
+                    self._logger.error(f"[WORKER] No handler for job type: {job.job_type}")
                     self._queue.update_status(
-                        job.id, JobStatus.FAILED, 
+                        job.id, JobStatus.FAILED,
                         error=f"No handler for job type: {job.job_type}"
                     )
                     continue
 
+                self._logger.info(f"[WORKER] Executing handler for job: {job.id}")
                 result = handler(job.payload)
+                self._logger.info(f"[WORKER] Handler completed for job: {job.id} | result_keys={list(result.keys()) if result else None}")
+                
                 self._queue.update_status(job.id, JobStatus.COMPLETED, result=result)
-                self._logger.info(f"Job {job.id} completed")
+                self._logger.info(f"[WORKER] Job completed successfully: {job.id}")
 
             except Exception as e:
                 if job:
                     self._queue.update_status(job.id, JobStatus.FAILED, error=str(e))
-                    self._logger.error(f"Job {job.id} failed: {str(e)}")
+                    self._logger.error(f"[WORKER] Job failed: {job.id} | error={str(e)}")

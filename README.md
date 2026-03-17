@@ -6,7 +6,26 @@ AI Content Generation API - Generate images, videos, and audio from text using m
 
 ## 🚀 Quick Start
 
-### 1. Setup Virtual Environment
+### Option 1: Docker Compose (Recommended)
+
+```bash
+# 1. Configure environment
+cp env/.env.example env/.env.dev
+# Edit env/.env.dev with your API keys
+
+# 2. Start all services
+docker-compose up -d
+
+# 3. Check logs
+docker-compose logs -f api
+```
+
+Server runs at `http://localhost:5000`
+Swagger docs at `http://localhost:5000/docs`
+
+### Option 2: Local Development
+
+#### 1. Setup Virtual Environment
 
 ```bash
 # Create virtual environment
@@ -19,13 +38,20 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 2. Install Dependencies
+#### 2. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Configure Environment
+#### 3. Start Redis (required)
+
+```bash
+# Using Docker
+docker run -d --name redis -p 6379:6379 redis:7-alpine
+```
+
+#### 4. Configure Environment
 
 ```bash
 # Copy example config
@@ -41,9 +67,12 @@ FLASK_PORT=5000
 FLASK_DEBUG=true
 OUTPUT_DIR=output
 LOG_DIR=src/logs
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_DB=0
 ```
 
-### 4. Run Server
+#### 5. Run Server
 
 ```bash
 python src/server/app.py

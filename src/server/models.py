@@ -44,3 +44,16 @@ model_info = api.model("ModelInfo", {
 models_response_data = api.model("ModelsResponseData", {
     "models": fields.List(fields.Nested(model_info)),
 })
+
+# Health check models
+service_status = api.model("ServiceStatus", {
+    "api": fields.String(description="API server status"),
+    "queue": fields.String(description="Queue service status (redis/memory)"),
+    "worker": fields.String(description="Background worker status"),
+})
+
+health_data = api.model("HealthData", {
+    "status": fields.String(description="Overall health status", enum=["healthy", "degraded"]),
+    "environment": fields.String(description="Current environment"),
+    "services": fields.Nested(service_status),
+})
