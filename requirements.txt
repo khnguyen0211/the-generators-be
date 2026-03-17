@@ -3,17 +3,18 @@
 # Web framework
 flask>=3.0.0
 flask-cors>=4.0.0
+flask-restx>=1.3.0         # Swagger UI
 
 # AI Providers - Text to Image
 replicate>=0.25.0          # Replicate API (Flux, SDXL, etc.)
 openai>=1.30.0             # OpenAI DALL-E 3
-stability-sdk>=0.8.0       # Stability AI (Stable Diffusion)
+# stability-sdk>=0.8.0     # Stability AI - disabled (requires Python <3.13)
 
 # AI Providers - Text to Video
 # (replicate covers Runway, Luma, etc.)
 
 # AI Providers - Text to Speech
-elevenlabs>=1.0.0          # ElevenLabs TTS
+# elevenlabs>=1.0.0        # ElevenLabs TTS - disabled (Windows long path issue)
 
 # Image/Video Processing
 Pillow>=10.0.0             # Image manipulation

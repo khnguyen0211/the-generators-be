@@ -1,0 +1,46 @@
+"""Swagger request/response models."""
+
+from flask_restx import fields
+from server.swagger import api
+
+# Common response model
+api_response = api.model("ApiResponse", {
+    "status_code": fields.Integer(description="HTTP status code"),
+    "message": fields.String(description="Response message"),
+    "errors": fields.List(fields.String, description="Error messages"),
+    "data": fields.Raw(description="Response data"),
+})
+
+# Job models
+job_data = api.model("JobData", {
+    "job_id": fields.String(description="Unique job identifier"),
+    "job_type": fields.String(description="Type of job"),
+    "status": fields.String(description="Job status", enum=["pending", "processing", "completed", "failed"]),
+    "result": fields.Raw(description="Job result when completed"),
+    "error": fields.String(description="Error message if failed"),
+    "created_at": fields.String(description="Job creation timestamp"),
+    "updated_at": fields.String(description="Last update timestamp"),
+})
+
+# Text to Image models
+generate_request = api.model("GenerateRequest", {
+    "prompt": fields.String(required=True, description="Text description of the image", example="A beautiful sunset over mountains"),
+    "provider": fields.String(description="AI provider", enum=["openai", "replicate", "stability"], example="openai"),
+    "size": fields.String(description="Image size", enum=["1024x1024", "1024x1792", "1792x1024", "512x512"], example="1024x1024"),
+    "quality": fields.String(description="Image quality (OpenAI only)", enum=["standard", "hd"], example="standard"),
+})
+
+generate_response_data = api.model("GenerateResponseData", {
+    "job_id": fields.String(description="Job ID to track progress"),
+    "status": fields.String(description="Initial job status"),
+})
+
+model_info = api.model("ModelInfo", {
+    "provider": fields.String(description="Provider name"),
+    "model": fields.String(description="Model name"),
+    "is_default": fields.Boolean(description="Is default provider"),
+})
+
+models_response_data = api.model("ModelsResponseData", {
+    "models": fields.List(fields.Nested(model_info)),
+})
