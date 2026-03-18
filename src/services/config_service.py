@@ -52,6 +52,10 @@ class ConfigService:
     def stability_api_key(self) -> str:
         return self.get("STABILITY_API_KEY", "")
 
+    @property
+    def huggingface_api_key(self) -> str:
+        return self.get("HUGGINGFACE_API_KEY", "")
+
     # ===== TEXT TO IMAGE =====
     def get_text_to_image_config(self, provider: str = None) -> dict:
         """Get text-to-image config for specified provider or default."""

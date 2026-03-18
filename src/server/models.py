@@ -25,7 +25,7 @@ job_data = api.model("JobData", {
 # Text to Image models
 generate_request = api.model("GenerateRequest", {
     "prompt": fields.String(required=True, description="Text description of the image", example="A beautiful sunset over mountains"),
-    "provider": fields.String(description="AI provider", enum=["openai", "replicate", "stability"], example="openai"),
+    "provider": fields.String(description="AI provider", enum=["openai", "replicate", "stability", "huggingface"], example="openai"),
     "orientation": fields.String(description="Output orientation", enum=["portrait", "landscape"], example="landscape"),
     "quality": fields.String(description="Image quality (OpenAI only)", enum=["standard", "hd"], example="standard"),
 })

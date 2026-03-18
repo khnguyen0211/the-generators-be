@@ -3,6 +3,7 @@
 from typing import Dict, Type
 from common.base_strategy import BaseGenerationStrategy
 from .strategies.openai_strategy import OpenAIStrategy
+from .strategies.huggingface_strategy import HuggingFaceStrategy
 
 
 class TextToImageService:
@@ -11,6 +12,7 @@ class TextToImageService:
     # Strategy registry - add new providers here
     STRATEGIES: Dict[str, Type[BaseGenerationStrategy]] = {
         "openai": OpenAIStrategy,
+        "huggingface": HuggingFaceStrategy,
     }
 
     def __init__(self, config):

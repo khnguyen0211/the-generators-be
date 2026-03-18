@@ -10,7 +10,7 @@ logger = logging.getLogger("the_generators")
 class TextToImageValidator(BaseValidator):
     """Validator for text-to-image requests."""
 
-    VALID_PROVIDERS = ["openai", "replicate", "stability"]
+    VALID_PROVIDERS = ["openai", "replicate", "stability", "huggingface"]
 
     @classmethod
     def validate_generate_request(cls, data: dict) -> tuple:

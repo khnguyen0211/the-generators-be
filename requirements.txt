@@ -8,6 +8,7 @@ flask-restx>=1.3.0         # Swagger UI
 # AI Providers - Text to Image
 replicate>=0.25.0          # Replicate API (Flux, SDXL, etc.)
 openai>=1.30.0             # OpenAI DALL-E 3
+huggingface_hub>=0.20.0    # Hugging Face Inference API
 # stability-sdk>=0.8.0     # Stability AI - disabled (requires Python <3.13)
 
 # AI Providers - Text to Video
