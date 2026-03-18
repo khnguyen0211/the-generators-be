@@ -12,6 +12,7 @@ from services.config_service import ConfigService
 from services.logger_service import LoggerService
 from services.queue_factory import QueueFactory
 from services.worker_service import WorkerService
+from services.db_service import DatabaseService
 from helpers.response_helper import ResponseHelper
 
 
@@ -26,6 +27,10 @@ def create_app() -> Flask:
     logger = LoggerService(config)
     logger.setup()
 
+    # Initialize database service (PostgreSQL)
+    db_service = DatabaseService()
+    db_service.initialize(config, logger)
+
     # Create queue service (Redis if available, else in-memory)
     queue_service = QueueFactory.create(config, logger)
     worker_service = WorkerService(queue_service, logger)
@@ -35,6 +40,7 @@ def create_app() -> Flask:
     # Store services in app config
     app.config["config_service"] = config
     app.config["logger_service"] = logger
+    app.config["db_service"] = db_service
     app.config["queue_service"] = queue_service
     app.config["worker_service"] = worker_service
 

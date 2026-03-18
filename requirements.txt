@@ -28,6 +28,9 @@ aiofiles>=23.0.0           # Async file operations
 # Redis
 redis>=5.0.0               # Redis client
 
+# PostgreSQL
+psycopg2-binary>=2.9.9     # PostgreSQL client
+
 # Validation
 pydantic>=2.5.0            # Request/Response validation
 

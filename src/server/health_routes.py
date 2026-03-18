@@ -29,6 +29,7 @@ class HealthResource(Resource):
                 "api": "up",
                 "queue": "unknown",
                 "worker": "unknown",
+                "database": "not configured",
             }
         }
         
@@ -48,6 +49,19 @@ class HealthResource(Resource):
             health_data["services"]["worker"] = "up"
         else:
             health_data["services"]["worker"] = "down"
+            health_data["status"] = "degraded"
+
+        # Check database
+        db_service = current_app.config.get("db_service")
+        if db_service and db_service.available:
+            try:
+                db_health = db_service.health_check()
+                health_data["services"]["database"] = db_health["status"]
+            except Exception:
+                health_data["services"]["database"] = "down"
+                health_data["status"] = "degraded"
+        elif db_service:
+            health_data["services"]["database"] = "down"
             health_data["status"] = "degraded"
         
         status_code = 200 if health_data["status"] == "healthy" else 503

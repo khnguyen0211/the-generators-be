@@ -51,7 +51,19 @@ pip install -r requirements.txt
 docker run -d --name redis -p 6379:6379 redis:7-alpine
 ```
 
-#### 4. Configure Environment
+#### 4. Start PostgreSQL (required)
+
+```bash
+# Using Docker
+docker run -d --name postgres -p 5432:5432 \
+  -e POSTGRES_DB=the_generators \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -v ./db/init:/docker-entrypoint-initdb.d \
+  postgres:16-alpine
+```
+
+#### 5. Configure Environment
 
 ```bash
 # Copy example config
@@ -70,9 +82,16 @@ LOG_DIR=src/logs
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DB=0
+
+# Database (PostgreSQL) - loaded via ConfigService
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=the_generators
+DB_USER=postgres
+DB_PASSWORD=postgres
 ```
 
-#### 5. Run Server
+#### 6. Run Server
 
 ```bash
 python src/server/app.py
@@ -312,14 +331,22 @@ src/
 ├── services/            # Shared services
 │   ├── config_service.py
 │   ├── logger_service.py
+│   ├── db_service.py
 │   ├── queue_service.py
 │   └── worker_service.py
 └── server/              # Flask app
+
+db/
+├── init/                # Auto-executed on first PostgreSQL start
+│   └── 001_initial_schema.sql
+├── migrations/          # Incremental schema changes
+├── migrate.py           # Migration CLI: python db/migrate.py
+└── schema.sql           # Schema reference (read-only)
 ```
 
 **Design Patterns:**
 - Strategy Pattern - Swap AI providers without changing business logic
-- Singleton - ConfigService, QueueService
+- Singleton - ConfigService, DatabaseService, QueueService
 - Factory - Service creates strategy based on provider
 
 ---

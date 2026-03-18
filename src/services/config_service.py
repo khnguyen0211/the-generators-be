@@ -153,6 +153,31 @@ class ConfigService:
     def flask_port(self) -> int:
         return int(self.get("FLASK_PORT", "5000"))
 
+    # ===== DATABASE =====
+    @property
+    def db_host(self) -> str:
+        return self.get("DB_HOST", "localhost")
+
+    @property
+    def db_port(self) -> int:
+        return int(self.get("DB_PORT", "5432"))
+
+    @property
+    def db_name(self) -> str:
+        return self.get("DB_NAME", "the_generators")
+
+    @property
+    def db_user(self) -> str:
+        return self.get("DB_USER", "postgres")
+
+    @property
+    def db_password(self) -> str:
+        return self.get("DB_PASSWORD", "postgres")
+
+    @property
+    def database_url(self) -> str:
+        return f"postgresql://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}"
+
     @staticmethod
     def _parse_env_file(path: Path) -> dict:
         """Parse env file: key=value, skip comments and empty lines."""

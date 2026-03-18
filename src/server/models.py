@@ -65,6 +65,7 @@ service_status = api.model("ServiceStatus", {
     "api": fields.String(description="API server status"),
     "queue": fields.String(description="Queue service status (redis/memory)"),
     "worker": fields.String(description="Background worker status"),
+    "database": fields.String(description="Database service status (postgres)"),
 })
 
 health_data = api.model("HealthData", {
