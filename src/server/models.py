@@ -60,6 +60,13 @@ tts_generate_request = api.model("TTSGenerateRequest", {
     "speed": fields.Float(description="Speech speed (0.25 to 4.0)", example=1.0),
 })
 
+# Image to Video models
+image_to_video_generate_request = api.model("ImageToVideoGenerateRequest", {
+    "image_url": fields.String(required=True, description="Source image URL", example="https://example.com/photo.jpg"),
+    "prompt": fields.String(required=True, description="Animation prompt", example="A cat slowly turning its head"),
+    "provider": fields.String(description="AI provider", enum=["openai"], example="openai"),
+})
+
 # Health check models
 service_status = api.model("ServiceStatus", {
     "api": fields.String(description="API server status"),

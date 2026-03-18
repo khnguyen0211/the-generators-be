@@ -16,3 +16,4 @@ ns_text_to_image = api.namespace("text-to-image", description="Text to Image gen
 ns_text_to_video = api.namespace("text-to-video", description="Text to Video generation")
 ns_text_to_speech = api.namespace("text-to-speech", description="Text to Speech generation")
 ns_health = api.namespace("health", description="Health check operations")
+ns_image_to_video = api.namespace("image-to-video", description="Image to Video generation")

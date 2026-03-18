@@ -41,6 +41,11 @@ output/
 logs/
 *.log
 
+# Testing
+.hypothesis/
+.pytest_cache/
+tests/
+
 # OS
 .DS_Store
 Thumbs.db

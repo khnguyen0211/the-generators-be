@@ -123,7 +123,7 @@ class ConfigService:
     def get_image_to_video_config(self, provider: str = None) -> dict:
         """Get image-to-video config for specified provider or default."""
         if provider is None:
-            provider = self.get("IMAGE_TO_VIDEO_DEFAULT", "replicate")
+            provider = self.get("IMAGE_TO_VIDEO_DEFAULT", "openai")
         
         prefix = f"IMAGE_TO_VIDEO_{provider.upper()}"
         return {
@@ -133,11 +133,11 @@ class ConfigService:
 
     @property
     def image_to_video_default(self) -> str:
-        return self.get("IMAGE_TO_VIDEO_DEFAULT", "replicate")
+        return self.get("IMAGE_TO_VIDEO_DEFAULT", "openai")
 
     @property
     def image_to_video_models(self) -> List[str]:
-        models = self.get("IMAGE_TO_VIDEO_MODELS", "replicate")
+        models = self.get("IMAGE_TO_VIDEO_MODELS", "openai")
         return [m.strip() for m in models.split(",")]
 
     # ===== SERVER =====
