@@ -39,7 +39,7 @@ def create_app() -> Flask:
     app.config["worker_service"] = worker_service
 
     # Initialize Swagger API
-    from server.swagger import api, ns_jobs, ns_text_to_image, ns_text_to_video, ns_health
+    from server.swagger import api, ns_jobs, ns_text_to_image, ns_text_to_video, ns_text_to_speech, ns_health
     api.init_app(app)
 
     # Import route resources to register them
@@ -47,12 +47,15 @@ def create_app() -> Flask:
     from server.health_routes import HealthResource
     from domain.text_to_image.routes import GenerateResource, ModelsResource
     from domain.text_to_video.routes import GenerateResource as VideoGenerateResource, ModelsResource as VideoModelsResource
+    from domain.text_to_speech.routes import GenerateResource as SpeechGenerateResource, ModelsResource as SpeechModelsResource
 
     # Register job handlers at startup
     from domain.text_to_image.service import TextToImageService
     from domain.text_to_video.service import TextToVideoService
+    from domain.text_to_speech.service import TextToSpeechService
     queue_service.register_handler("text_to_image", TextToImageService(config).generate)
     queue_service.register_handler("text_to_video", TextToVideoService(config).generate)
+    queue_service.register_handler("text_to_speech", TextToSpeechService(config).generate)
 
     logger.info(f"App started in '{config.environment}' environment")
 

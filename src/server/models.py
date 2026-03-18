@@ -51,6 +51,15 @@ video_generate_request = api.model("VideoGenerateRequest", {
     "provider": fields.String(description="AI provider", enum=["openai"], example="openai"),
 })
 
+# Text to Speech models
+tts_generate_request = api.model("TTSGenerateRequest", {
+    "prompt": fields.String(required=True, description="Text to convert to speech", example="Hello, welcome to The Generators API."),
+    "provider": fields.String(description="AI provider", enum=["openai"], example="openai"),
+    "voice": fields.String(description="Voice preset", enum=["alloy", "ash", "ballad", "coral", "echo", "fable", "onyx", "nova", "sage", "shimmer", "verse"], example="alloy"),
+    "response_format": fields.String(description="Audio output format", enum=["mp3", "opus", "aac", "flac", "wav", "pcm"], example="mp3"),
+    "speed": fields.Float(description="Speech speed (0.25 to 4.0)", example=1.0),
+})
+
 # Health check models
 service_status = api.model("ServiceStatus", {
     "api": fields.String(description="API server status"),
