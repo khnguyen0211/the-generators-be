@@ -8,6 +8,7 @@ from pathlib import Path
 from openai import OpenAI
 
 from common.base_strategy import BaseGenerationStrategy
+from common.orientation import resolve_size
 from helpers.url_helper import UrlHelper
 
 logger = logging.getLogger("the_generators")
@@ -28,10 +29,15 @@ class OpenAIStrategy(BaseGenerationStrategy):
 
         logger.info(f"[OPENAI] Calling Sora API | model={model}")
 
-        video_job = self._client.videos.create(
-            model=model,
-            prompt=prompt,
-        )
+        create_params = {"model": model, "prompt": prompt}
+
+        orientation = input_data.get("orientation")
+        if orientation:
+            size = resolve_size(orientation, "text_to_video")
+            create_params["size"] = size
+            logger.info(f"[OPENAI] Orientation resolved | {orientation} -> size={size}")
+
+        video_job = self._client.videos.create(**create_params)
 
         video_id = self._wait_for_completion(video_job.id)
         logger.info(f"[OPENAI] Video generation completed")

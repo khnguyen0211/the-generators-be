@@ -9,6 +9,7 @@ from pathlib import Path
 from openai import OpenAI
 
 from common.base_strategy import BaseGenerationStrategy
+from common.orientation import resolve_size
 from helpers.url_helper import UrlHelper
 
 logger = logging.getLogger("the_generators")
@@ -31,7 +32,14 @@ class OpenAIStrategy(BaseGenerationStrategy):
         logger.info(f"[OPENAI] Calling Sora API for image-to-video | model={model}")
         logger.debug(f"[OPENAI] image_url={image_url[:80]}... | prompt={prompt[:80]}...")
 
-        image_file = self._download_image(image_url)
+        orientation = input_data.get("orientation")
+        if orientation:
+            target_size = resolve_size(orientation, "image_to_video")
+            logger.info(f"[OPENAI] Orientation resolved | {orientation} -> size={target_size}")
+        else:
+            target_size = "720x1280"
+
+        image_file = self._download_image(image_url, target_size)
 
         video_job = self._client.videos.create(
             model=model,

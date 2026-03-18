@@ -7,6 +7,7 @@ from pathlib import Path
 from openai import OpenAI
 
 from common.base_strategy import BaseGenerationStrategy
+from common.orientation import resolve_size
 from helpers.url_helper import UrlHelper
 
 logger = logging.getLogger("the_generators")
@@ -23,9 +24,16 @@ class OpenAIStrategy(BaseGenerationStrategy):
     def generate(self, input_data: dict) -> dict:
         """Generate image using DALL-E."""
         prompt = input_data["prompt"]
-        size = input_data.get("size", self._model_config.get("size", "1024x1024"))
         quality = input_data.get("quality", self._model_config.get("quality", "standard"))
         model = self._model_config.get("model", "dall-e-3")
+
+        orientation = input_data.get("orientation")
+        if orientation:
+            size = resolve_size(orientation, "text_to_image")
+            from domain.text_to_image.prompts import enhance_prompt
+            prompt = enhance_prompt(prompt, orientation)
+        else:
+            size = self._model_config.get("size", "1024x1024")
 
         logger.info(f"[OPENAI] Calling DALL-E API | model={model} | size={size} | quality={quality}")
         logger.debug(f"[OPENAI] Prompt: {prompt[:100]}...")
