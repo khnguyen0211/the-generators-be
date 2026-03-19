@@ -144,6 +144,15 @@ class ConfigService:
         models = self.get("IMAGE_TO_VIDEO_MODELS", "openai")
         return [m.strip() for m in models.split(",")]
 
+    # ===== PROMPT ENHANCER =====
+    @property
+    def prompt_enhancer_enabled(self) -> bool:
+        return self.get("PROMPT_ENHANCER_ENABLED", "false").lower() == "true"
+
+    @property
+    def prompt_enhancer_model(self) -> str:
+        return self.get("PROMPT_ENHANCER_MODEL", "gpt-4")
+
     # ===== SERVER =====
     @property
     def output_dir(self) -> str:

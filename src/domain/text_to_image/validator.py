@@ -3,6 +3,7 @@
 import logging
 from middleware.base_validator import BaseValidator
 from common.orientation import VALID_ORIENTATIONS
+from .prompts import VALID_CATEGORIES
 
 logger = logging.getLogger("the_generators")
 
@@ -31,5 +32,9 @@ class TextToImageValidator(BaseValidator):
             logger.debug(f"[VALIDATOR] Invalid orientation: {orientation}")
         elif orientation:
             logger.debug(f"[VALIDATOR] text_to_image orientation={orientation}")
+
+        category = data.get("category")
+        if category and category not in VALID_CATEGORIES:
+            errors.append(f"Invalid category. Must be one of: {VALID_CATEGORIES}")
 
         return len(errors) == 0, errors

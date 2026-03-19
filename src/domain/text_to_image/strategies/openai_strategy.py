@@ -9,6 +9,7 @@ from openai import OpenAI
 from common.base_strategy import BaseGenerationStrategy
 from common.orientation import resolve_size
 from helpers.url_helper import UrlHelper
+from ..prompt_enhancer import PromptEnhancer
 
 logger = logging.getLogger("the_generators")
 
@@ -26,17 +27,25 @@ class OpenAIStrategy(BaseGenerationStrategy):
         prompt = input_data["prompt"]
         quality = input_data.get("quality", self._model_config.get("quality", "standard"))
         model = self._model_config.get("model", "dall-e-3")
+        category = input_data.get("category")
+
+        is_enhanced = False
+        detected_category = None
+
+        if self._config.prompt_enhancer_enabled:
+            enhancer = PromptEnhancer(self._config)
+            result = enhancer.enhance(prompt, category)
+            prompt = result["enhanced_prompt"]
+            detected_category = result["category"]
+            is_enhanced = True
 
         orientation = input_data.get("orientation")
         if orientation:
             size = resolve_size(orientation, "text_to_image")
-            from domain.text_to_image.prompts import enhance_prompt
-            prompt = enhance_prompt(prompt, orientation)
         else:
             size = self._model_config.get("size", "1024x1024")
 
         logger.info(f"[OPENAI] Calling DALL-E API | model={model} | size={size} | quality={quality}")
-        logger.debug(f"[OPENAI] Prompt: {prompt[:100]}...")
 
         response = self._client.images.generate(
             model=model,
@@ -58,6 +67,8 @@ class OpenAIStrategy(BaseGenerationStrategy):
             "output_url": full_url,
             "provider": "openai",
             "model": model,
+            "is_enhanced": is_enhanced,
+            "category": detected_category,
         }
 
     def get_model_name(self) -> str:

@@ -28,6 +28,9 @@ generate_request = api.model("GenerateRequest", {
     "provider": fields.String(description="AI provider", enum=["openai", "replicate", "stability", "huggingface"], example="openai"),
     "orientation": fields.String(description="Output orientation", enum=["portrait", "landscape"], example="landscape"),
     "quality": fields.String(description="Image quality (OpenAI only)", enum=["standard", "hd"], example="standard"),
+    "category": fields.String(description="Image category for prompt enhancement (optional, auto-detected if not provided)",
+                              enum=["portrait", "landscape", "product", "food", "architecture", "abstract", "wildlife", "street", "fantasy", "fashion", "stilllife", "vintage", "conceptual"],
+                              example="landscape"),
 })
 
 generate_response_data = api.model("GenerateResponseData", {
@@ -50,6 +53,9 @@ video_generate_request = api.model("VideoGenerateRequest", {
     "prompt": fields.String(required=True, description="Text description of the video", example="A cat walking on the beach"),
     "provider": fields.String(description="AI provider", enum=["openai"], example="openai"),
     "orientation": fields.String(description="Video orientation", enum=["portrait", "landscape"], example="landscape"),
+    "category": fields.String(description="Video category for prompt enhancement (optional, auto-detected if not provided)", 
+                              enum=["cinematic", "animation", "fashion", "product", "nature", "travel", "music", "sports", "news", "educational", "gaming", "historical"],
+                              example="cinematic"),
 })
 
 # Text to Speech models

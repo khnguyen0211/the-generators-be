@@ -10,6 +10,7 @@ from openai import OpenAI
 from common.base_strategy import BaseGenerationStrategy
 from common.orientation import resolve_size
 from helpers.url_helper import UrlHelper
+from ..prompt_enhancer import PromptEnhancer
 
 logger = logging.getLogger("the_generators")
 
@@ -26,6 +27,17 @@ class OpenAIStrategy(BaseGenerationStrategy):
         """Generate video using Sora."""
         prompt = input_data["prompt"]
         model = self._model_config.get("model", "sora")
+        category = input_data.get("category")
+
+        is_enhanced = False
+        detected_category = None
+
+        if self._config.prompt_enhancer_enabled:
+            enhancer = PromptEnhancer(self._config)
+            result = enhancer.enhance(prompt, category)
+            prompt = result["enhanced_prompt"]
+            detected_category = result["category"]
+            is_enhanced = True
 
         logger.info(f"[OPENAI] Calling Sora API | model={model}")
 
@@ -51,6 +63,8 @@ class OpenAIStrategy(BaseGenerationStrategy):
             "output_url": full_url,
             "provider": "openai",
             "model": model,
+            "is_enhanced": is_enhanced,
+            "category": detected_category,
         }
 
     def get_model_name(self) -> str:
