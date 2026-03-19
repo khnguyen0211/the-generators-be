@@ -1,39 +1,18 @@
 """Image prompt enhancer using LLM."""
 
 import logging
-from openai import OpenAI
+from common.prompt_enhancer_factory import PromptEnhancerFactory
 from .prompts import IMAGE_CATEGORIES, IMAGE_STYLES, DEFAULT_CATEGORY, VALID_CATEGORIES
 
 logger = logging.getLogger("the_generators")
 
-ENHANCER_SYSTEM_PROMPT = """You are a professional image prompt enhancer. Transform simple prompts into detailed, vivid image descriptions.
-
-Given:
-1. User's original prompt
-2. Image category with required format components
-3. Example prompts for reference
-4. Style references (lighting, color, composition, etc.)
-
-Your task:
-1. Analyze which format components are missing from user's prompt
-2. Select appropriate styles from the style references that match the mood and theme
-3. Creatively fill in the missing details while preserving user's intent
-4. Return an enhanced prompt that covers ALL required format components
-
-Rules:
-- Keep the user's core idea intact
-- Be vivid and specific with visual details
-- Use specific style terms from the provided style references when describing lighting, colors, composition, etc.
-- Match the style of the example prompts
-- Output ONLY the enhanced prompt, no explanations or labels"""
-
 
 class PromptEnhancer:
-    """Enhances image prompts using LLM."""
+    """Enhances image prompts using provider-specific LLM."""
 
-    def __init__(self, config):
+    def __init__(self, config, provider: str = "openai"):
         self._config = config
-        self._client = OpenAI(api_key=config.openai_api_key)
+        self._provider = provider
 
     def enhance(self, prompt: str, category: str = None) -> dict:
         """Enhance prompt with category detection and LLM."""
@@ -43,9 +22,12 @@ class PromptEnhancer:
             detected_category = self._detect_category(prompt)
 
         category_data = IMAGE_CATEGORIES[detected_category]
-        enhanced_prompt = self._call_llm(prompt, category_data)
+        style_reference = self._build_style_reference()
 
-        logger.info(f"[ENHANCER] Image prompt enhanced | category={detected_category}")
+        enhancer = PromptEnhancerFactory.create(self._provider, self._config)
+        enhanced_prompt = enhancer.enhance(prompt, detected_category, category_data, style_reference)
+
+        logger.info(f"[ENHANCER] Image prompt enhanced | category={detected_category} | provider={self._provider}")
 
         return {
             "enhanced_prompt": enhanced_prompt,
@@ -66,40 +48,6 @@ class PromptEnhancer:
 
         logger.debug(f"[ENHANCER] Category detected: {best_match} (score={best_score})")
         return best_match
-
-    def _call_llm(self, prompt: str, category_data: dict) -> str:
-        """Call LLM to enhance the prompt."""
-        format_list = ", ".join(category_data["format"])
-        examples = "\n\n".join(category_data["examples"])
-        style_reference = self._build_style_reference()
-
-        user_message = f"""Category: {category_data["name"]}
-
-Required format components: {format_list}
-
-User prompt: {prompt}
-
-Example prompts for this category:
-{examples}
-
-Style references (use these terms when describing visual elements):
-{style_reference}
-
-Now enhance the user prompt to include all required format components:"""
-
-        logger.info(f"[ENHANCER] Calling LLM | model={self._config.prompt_enhancer_model}")
-
-        response = self._client.chat.completions.create(
-            model=self._config.prompt_enhancer_model,
-            messages=[
-                {"role": "system", "content": ENHANCER_SYSTEM_PROMPT},
-                {"role": "user", "content": user_message}
-            ],
-            temperature=0.7,
-            max_tokens=1000
-        )
-
-        return response.choices[0].message.content.strip()
 
     def _build_style_reference(self) -> str:
         """Build condensed style reference for LLM."""

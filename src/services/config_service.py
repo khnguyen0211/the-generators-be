@@ -150,8 +150,12 @@ class ConfigService:
         return self.get("PROMPT_ENHANCER_ENABLED", "false").lower() == "true"
 
     @property
-    def prompt_enhancer_model(self) -> str:
-        return self.get("PROMPT_ENHANCER_MODEL", "gpt-4")
+    def prompt_enhancer_openai_model(self) -> str:
+        return self.get("PROMPT_ENHANCER_OPENAI_MODEL", "gpt-4")
+
+    @property
+    def prompt_enhancer_huggingface_model(self) -> str:
+        return self.get("PROMPT_ENHANCER_HUGGINGFACE_MODEL", "Qwen/Qwen2.5-7B-Instruct")
 
     # ===== SERVER =====
     @property

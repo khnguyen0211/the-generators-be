@@ -33,7 +33,7 @@ class OpenAIStrategy(BaseGenerationStrategy):
         detected_category = None
 
         if self._config.prompt_enhancer_enabled:
-            enhancer = PromptEnhancer(self._config)
+            enhancer = PromptEnhancer(self._config, provider="openai")
             result = enhancer.enhance(prompt, category)
             prompt = result["enhanced_prompt"]
             detected_category = result["category"]
